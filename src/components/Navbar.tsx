@@ -1,8 +1,29 @@
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
+import { useState, useEffect } from "react";
 
-const NavItems = ["Home", "Man", "Shoes", "Cap", "Contact"];
+const NavItems = ["Home", "Man", "Shoes", "Cap"];
 
-export default function Navbar() {
+const Navbar = () => {
+  const [profileClicks, setProfileClicks] = useState(0);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleProfileClick = () => {
+    if (profileClicks === 0) {
+      navigate("/login");
+    } else {
+      navigate("/profile");
+    }
+    setProfileClicks(profileClicks + 1);
+  };
+
+  useEffect(() => {
+    if (location.pathname === "/") {
+      setProfileClicks(0);
+    }
+  }, [location]);
+
   return (
     <Container>
       <Wrapper>
@@ -12,19 +33,28 @@ export default function Navbar() {
         </LeftContent>
         <Contents>
           {NavItems.map((item, index) => (
-            <NavItem key={index} href={item === "Home" ? "/" : `/${item}`}>
+            <NavItem
+              key={index}
+              href={item === "Home" ? "/" : `/${item.toLowerCase()}`}
+            >
               {item}
             </NavItem>
           ))}
         </Contents>
         <RightContents>
-          <Profile src="../src/assets/images/Profile.svg" alt="profile" />
-          <Cart src="../src/assets/images/Cart.svg" alt="cart" />
+          <ProfileLink onClick={handleProfileClick}>
+            <Profile src="../src/assets/images/Profile.svg" alt="profile" />
+          </ProfileLink>
+          <LinkTo to="/cart">
+            <Cart src="../src/assets/images/Cart.svg" alt="cart" />
+          </LinkTo>
         </RightContents>
       </Wrapper>
     </Container>
   );
-}
+};
+
+export default Navbar;
 
 const Container = styled.div`
   width: 100%;
@@ -38,6 +68,11 @@ const Container = styled.div`
   top: 0;
   background-color: white;
   z-index: 1000;
+`;
+
+const LinkTo = styled(Link)`
+  width: 24px;
+  height: 24px;
 `;
 
 const Wrapper = styled.div`
@@ -118,6 +153,10 @@ const RightContents = styled.div`
   @media (max-width: 960px) {
     gap: 10px;
   }
+`;
+
+const ProfileLink = styled.div`
+  cursor: pointer;
 `;
 
 const Profile = styled.img`
